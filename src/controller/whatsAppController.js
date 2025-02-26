@@ -27,17 +27,17 @@ class WhatsAppController {
 
         Element.prototype.hide = function() {
 
-            this.stytle.display = "none";
+            this.style.display = "none";
 
         }
         Element.prototype.show = function() {
 
-            this.stytle.display = "none";
+            this.style.display = "none";
 
       
         Element.prototype.toggle = function() {
 
-            this.stytle.display = (this.style.display === 'none' ) ? 'block' : 'none';
+            this.style.display = (this.style.display === 'none' ) ? 'block' : 'none';
 
         }
 
