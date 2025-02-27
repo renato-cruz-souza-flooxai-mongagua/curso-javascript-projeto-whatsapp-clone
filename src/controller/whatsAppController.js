@@ -100,8 +100,13 @@ class WhatsAppController {
       this.el.myPhoto.on('click', e => {
 
         this.closeAllLeftPanel();
-        this.el.panelEditProfile.show()
-        this.el.panelEditProfile.addClass('open')
+        this.el.panelEditProfile.show();
+        setTimeout(()=>{
+
+            this.el.panelEditProfile.addClass('open')
+           }, 300);
+       
+        
 
       })
 
@@ -109,8 +114,11 @@ class WhatsAppController {
 
         this.closeAllLeftPanel();
         this.el.panelAddContact.show();
+        setTimeout(()=>{
+
+         this.el.panelAddContact.addClass('open')
+        }, 300);
         
-        this.el.panelAddContact.addClass('open')
 
       })
 
