@@ -98,7 +98,20 @@ class WhatsAppController {
             return new FormData(this);
 
         }
+        HTMLFormElement.prototype.toJSON = function () {
 
+            let json = {};
+
+            this.getForm().forEach((value, key)=> {
+
+                json[key] = value;
+
+            })
+
+            return json
+
+
+        }
     }
 
     initEvents() {
