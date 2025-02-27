@@ -134,6 +134,13 @@ class WhatsAppController {
 
       })
 
+      this.el.photoContainerEditProfile.on('click', e=>{
+
+        this.el.inputProfilePhoto.click();
+
+
+      })
+
     }
 
     closeAllLeftPanel() {
