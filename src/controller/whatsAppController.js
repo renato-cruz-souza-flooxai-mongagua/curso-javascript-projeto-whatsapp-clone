@@ -208,21 +208,222 @@ class WhatsAppController {
 
 
       this.el.btnAttachPhoto.on('click', (e) => {
-        
-        console.log('Photo')
+    
+        this.el.inputPhoto.click();
+    
       });
+
+      this.el.inputPhoto.on('change', (e) => {
+
+        [...this.el.inputPhoto.files].forEach((file) => {
+  
+         console.log(file)
+  
+        });
+      });
+  
+
       this.el.btnAttachCamera.on('click', (e) => {
         
-        console.log('Camera')
+        this.closeAllMainPanel()
+        this.el.panelCamera.addClass('open');
+        this.el.panelCamera.css({
+          'height': 'calc(100% - 120px)',
+        });
+
+        this._camera = new CameraController(this.el.videoCamera);
+
       });
+
+      this.el.btnTakePicture.on('click', (e) => {
+
+        console.log('take picture')
+
+      })
+
+      this.el.btnClosePanelCamera.on('click', (e) => {
+
+        this.closeAllMainPanel()
+        this.el.panelMessagesContainer.show()
+
+      })
+
       this.el.btnAttachDocument.on('click', (e) => {
        
-        console.log('Document')
+        this.closeAllMainPanel()
+        this.el.panelDocumentPreview.addClass('open')
+        this.el.panelDocumentPreview.css({
+            'height': 'calc(100% - 120px)',
+          });
+  
+
       });
+
+      this.el.btnClosePanelDocumentPreview.on('click', (e) => {
+
+        this.closeAllMainPanel()
+        this.el.panelMessagesContainer.show()
+
+      })
+
+      this.el.btnSendDocument.on('click', (e) => {
+
+        console.log('send document')
+
+      })
+
       this.el.btnAttachContact.on('click', (e) => {
        
-        console.log('Contact')
+        this.el.modalContacts.show()
       });
+
+      this.el.btnCloseModalContacts.on("click", (e) =>{
+
+        this.el.modalContacts.hide()
+
+      })
+
+      this.el.btnSendMicrophone.on('click', (e) => {
+
+        this.el.recordMicrophone.show();
+        this.el.btnSendMicrophone.hide()
+        this.startRecordMicrophoneTime()
+
+      })
+
+      this.el.btnCancelMicrophone.on('click', (e)=>{
+
+        this.closeRecordMicrophone()
+
+      })
+
+      this.el.btnFinishMicrophone.on('click', (e)=>{
+
+        this.closeRecordMicrophone()
+
+      })
+
+      
+    this.el.inputText.on('keypress', (e) => {
+
+        if (e.key === 'Enter' && !e.ctrlKey) {
+
+          e.preventDefault()
+
+          this.el.btnSend.click()
+
+        }
+      })
+
+
+      this.el.inputText.on('keyup', (e) => {
+
+        if (this.el.inputText.innerHTML.length) {
+
+          this.el.inputPlaceholder.hide()
+          this.el.btnSendMicrophone.hide()
+          this.el.btnSend.show()
+
+        } else {
+
+          this.el.inputPlaceholder.show()
+          this.el.btnSendMicrophone.show()
+          this.el.btnSend.hide()
+
+        }
+        
+      })
+
+      this.el.btnSend.on('click', (e) => {
+
+        console.log(this.el.inputText.innerHTML)
+
+      });
+
+      this.el.btnEmojis.on('click', (e) => {
+
+        this.el.panelEmojis.toggleClass('open');
+  
+
+      });
+
+      this.el.panelEmojis.querySelectorAll('.emojik').forEach(emoji => {
+
+        emoji.on('click', (e)=> {
+
+            console.log(emoji.dataset.unicode)
+
+           let img = this.el.imgEmojiDefault.cloneNode()
+
+           img.style.cssText = emoji.style.cssText;
+           img.dataset.unicode = emoji.dataset.unicode
+           img.alt = emoji.dataset.unicode
+
+           emoji.classList.forEach(name =>{
+            img.classList.add(name);
+
+           })
+
+           let cursor = window.getSelection();
+
+           if(!cursor.focusNode | !cursor.focusNode.id == 'input-text') {
+
+            this.el.inputText.focus();
+            cursor = window.getSelection();
+
+           }
+
+           let range = document.createRange();
+
+           range = cursor.getRangeAt(0);
+           range.deleteContents();
+
+           let frag = document.createDocumentFragment()
+
+           frag.appendChild(img);
+
+           range.insertNode(frag);
+
+           range.setStartAfter(img);
+
+
+           this.el.inputText.dispatchEvent(new Event('keyup'))
+
+
+        })
+
+      })
+
+      
+    }
+
+    startRecordMicrophoneTime() {
+
+        let start = Date.now()
+
+        this._recordMicrophonwInterval = setInterval(() => {
+
+           this.el.recordMicrophoneTimer.innerHTML =  Format.toTime(Date.now() - start)
+
+        }, 100)
+
+      
+
+    }
+
+    closeRecordMicrophone(){
+
+        this.el.recordMicrophone.hide();
+        this.el.btnSendMicrophone.show();
+        clearInterval(this._recordMicrophonwInterval)
+
+    }
+
+    closeAllMainPanel(){
+
+        this.el.panelMessagesContainer.hide()
+        this.el.panelDocumentPreview.removeClass('open')
+        this.el.panelCamera.removeClass('open')
 
     }
 
@@ -230,7 +431,7 @@ class WhatsAppController {
 
         document.removeEventListener('click', this.closeMenuAttach);
         this.el.menuAttach.removeClass('open');
-        console.log('remove menu')
+        
 
     }
 
