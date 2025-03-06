@@ -5,37 +5,128 @@ export class MicrophoneController extends ClassEvent {
 
         super() 
 
-        this._initialized = false;
+        this._mineType = 'audio/webm';
 
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(stream => {
-                this._stream = stream;
-                this._audio = new Audio();
-                this._audio.src = URL.createObjectURL(stream);
-                this._audio.play();
+        this._available = false;
 
-                this.trigger('play', audio)
-                this._initialized = true;
-            })
-            .catch(err => {
-                console.error('Erro ao acessar o microfone:', err);
-                this._initialized = false;
+        navigator.mediaDevices
+          .getUserMedia({ audio: true })
+          .then((stream) => {
+            this._available = true;
+    
+            this._stream = stream;
+    
+            this.trigger("ready", {
+              sream: this._stream,
+              audio: this._audio,
             });
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+    
+    isAvailable() {
+
+        return this._available
+
     }
 
     stop() {
-        if (this._initialized && this._audio) {
-            this._audio.pause();
-            this._audio.src = "";  // Limpa a referência do áudio
-            this._stream.getTracks().forEach(track => track.stop()); // Para o fluxo
-            console.log("Microfone parado.");
-        } else {
-            console.error("Microfone não está inicializado ou não há áudio para parar.");
+        if (this._available) {
+          this._stream.getTracks().forEach((track) => {
+            track.stop();
+          });
+    
+          this.trigger("stop");
         }
-    }
+      }
 
-    isInitialized() {
-        return this._initialized;
-    }
+      startRecorder(){
+
+        if (this.isAvailable) {
+
+           this._mediaRecorder = new MediaRecorder(this._stream, {
+            mineType: this._mineType
+           });
+
+           this._recordedChunks = [];
+
+           this._mediaRecorder.addEventListener('dataavailable', e => {
+
+            if(e.size.data.size > 0) this._recordedChunks.push(e.data)
+
+           })
+
+           this._mediaRecorder.addEventListener('stop', e => {
+
+            let blob = new Blob(this._recordedChunks, {
+                type: this._mineType
+            })
+
+            let filename = `rec${Date.now()}`
+
+            let file = new File([Blob], filename, {
+                type: this._mineType,
+                lastModified: Date.now()
+
+            })
+
+            console.log('file', file)
+
+            let reader = new FileReader()
+
+            reader.onload = e => {
+
+                console.log('reader file', file)
+
+                let audio = new Audio(reader.result);
+
+                audio.play();
+
+            }
+
+            reader.readAsDataURL(file)
+
+           })
+
+           this._mediaRecorder.start()
+           this.startTimer()
+
+        }
+
+      }
+ 
+
+      stopRecorder(){
+
+        if (this.isAvailable) {
+
+            this._mediaRecorder.stop();
+            this.stop()
+            this.stopTimer()
+
+        }
+
+
+      }
+
+      startTimer() {
+
+         let start = Date.now()
+        
+              this._recordMicrophoneInterval = setInterval(() => {
+              
+                this.trigger('recordtimer',(Date.now() - start) )
+
+              }, 100)
+
+      }
+
+      stopTimer() {
+
+        clearInterval(this._recordMicrophoneInterval)
+
+      }
 
 }
