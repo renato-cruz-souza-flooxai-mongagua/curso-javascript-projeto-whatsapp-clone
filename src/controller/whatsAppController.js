@@ -2,6 +2,8 @@ import {Format} from "./../util/format"
 import {CameraController} from "./cameraController"
 import { MicrophoneController } from './MicrophoneController';
 import { DocumentPreviewController } from "./DocumentPreviewController"
+import { Firebase } from '../util/Firebase'
+import { User } from "../model/User";
 
 export class WhatsAppController {
 
@@ -9,12 +11,48 @@ export class WhatsAppController {
 
         console.log('WhatsAppController OK')
 
+        this._firebase = new Firebase()
+        this.initAuth();
         this.elementsPrototype();
         this.loadElements();
         this.initEvents();
         
+        
+    }
 
+    initAuth(){
+        this._firebase.initAuth().
+        then(response => {
 
+            this._user = new User(response.user.email)
+
+            this._user.on('datachange', data =>{
+
+                document.querySelector('title').innerHTML = data.name + '- WhatsApp Clone'
+
+                if(data.photo) {
+
+                  let photo =  this.el.imgPanelEditProfile;
+                    photo.src = data.photo;
+                    photo.show()
+                    this.el.imgDefaultPanelEditProfile.hide()
+
+                   let photo2 = this.el.myPhoto.querySelector('img')
+                   photo2.src = data.photo;
+                    photo2.show()
+
+                }
+
+            })
+
+            this.el.appContent.css({
+                display: 'flex'
+            })
+
+    
+        }).catch(err =>{
+            console.error(err);
+        })
     }
 
     loadElements() {
@@ -331,7 +369,7 @@ export class WhatsAppController {
 
           this._MicrophoneController = new MicrophoneController()
 
-          if (this._MicrophoneController.isInitialized()) {
+          if (this._MicrophoneController.isAvailable()) {
             console.log("Microfone inicializado com sucesso");
         } else {
             console.log("Falha na inicialização do microfone");
