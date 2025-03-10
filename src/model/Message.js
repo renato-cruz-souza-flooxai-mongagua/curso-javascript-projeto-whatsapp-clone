@@ -19,12 +19,12 @@ export class Massage extends Model {
     get status() {return this._data.status;}
     set status(value) { return this._data.status = value; }
 
-    getViewElement(){
+    getViewElement(me = true){
 
         let div = document.createElement('div');
 
         div.className = 'message';
-
+ 
         switch (this.type) {
 
 
@@ -175,7 +175,7 @@ export class Massage extends Model {
             
             div.innerHTML = `
 
-                <div class="_3_7SH _17oKL message-out">
+                <div class="_3_7SH _17oKL">
                     <div class="_2N_Df LKbsn">
                         <div class="_2jfIu">
                             <div class="_2cfqh">
@@ -268,7 +268,7 @@ export class Massage extends Model {
             
             div.innerHTML = `
 
-                <div class="font-style _3DFk6 message-in tail">
+                <div class="font-style _3DFk6 tail">
                     <span class="tail-container"></span>
                     <span class="tail-container highlight"></span>
                     <div class="Tkt2p">
@@ -289,8 +289,14 @@ export class Massage extends Model {
 
         }
 
-        return div;
+         let className = (me) ? 'message-out' : 'message in';
+
+         div.firstElementChild.classList.add(className)
+
+          return div;
+
 
     }
 
+    
 }
