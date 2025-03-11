@@ -11,15 +11,20 @@ export class User extends Model {
 
     }
 
+    get id(){return this._data.id}
+    set id(value){this._data.id = value}
+    
     get name(){return this._data.name}
     set name(value){this._data.name = value}
-
     
     get email(){return this._data.email}
     set email(value){this._data.email = value}
 
     get photo(){return this._data.photo}
     set photo(value){this._data.photo = value}
+
+    get chatId(){return this._data.chatId}
+    set chatId(value){this._data.chatId = value}
 
 
 
