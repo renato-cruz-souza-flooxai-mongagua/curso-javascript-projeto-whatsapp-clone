@@ -1,6 +1,7 @@
+import { Firebase } from "../util/Firebase";
 import { Model } from "./model"
 
-export class Massage extends Model {
+export class Message extends Model {
 
     constructor(){
         super()
@@ -295,8 +296,41 @@ export class Massage extends Model {
 
           return div;
 
+    }
+
+    static send(chatId, from, type, content){
+
+       return Message.getRef(chatId).add({
+        content,
+        timeStamp: new Date(),
+        status: 'wait',
+        type,
+        from
+
+      })  
 
     }
 
+    static getRef(chatId) {
+        if (!chatId) {
+            throw new Error("chatId é inválido!");
+        }
+    
+        return Firebase.db()
+            .collection('chats')
+            .doc(chatId)
+            .collection('messages');
+    }
+
+
     
 }
+
+   //static getRef(chatId){
+
+      //  return Firebase.db()
+       // .collection('chats')
+        //.doc(chatId)
+        //.collection('messages');
+
+    //}
