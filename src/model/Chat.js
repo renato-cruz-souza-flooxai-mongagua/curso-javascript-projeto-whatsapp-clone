@@ -1,4 +1,4 @@
-import Firebase from "firebase";
+import {Firebase} from "../util/Firebase";
 import { Model } from "./model";
 
 
@@ -24,32 +24,27 @@ export class Chat extends Model{
 
     } 
 
-    static create(meEmail, contactEmail){
-
-        return new Promise((s,f)=> {
-
-            let users = {}
-
-            users[btoa(meEmail)] = true
-            users[btoa(contactEmail)] = true
-
-          Chat.getRef().add({
-            users,
-            timeStamp: new Date()
-          }).then(doc=>{
-
-            Chat.getRef().doc(doc.id).get().then(chat =>{
-
-                s(chat)
-
-            })
-
-          }).catch(err=>{f(err)})
-
-        }).catch(err=>{f(err)})
-
+    static create(meEmail, contactEmail) {
+        return new Promise((s, f) => {
+            let users = {};
+    
+            users[btoa(meEmail)] = true;
+            users[btoa(contactEmail)] = true;
+    
+            Chat.getRef().add({
+                users,
+                timeStamp: new Date()
+            }).then(doc => {
+                Chat.getRef().doc(doc.id).update({
+                    chatId: doc.id 
+                }).then(() => {
+                    Chat.getRef().doc(doc.id).get().then(chat => {
+                        s(chat);
+                    }).catch(err => f(err));
+                }).catch(err => f(err));
+            }).catch(err => f(err));
+        });
     }
-
 
     static find(meEmail, contactEmail){
         return Chat.getRef()
