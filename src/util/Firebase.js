@@ -5,12 +5,12 @@ require('firebase/firestore');
 export class Firebase {
     constructor() {
         this._config = {
-            apiKey: "AIzaSyAK_Bye_XNY3mWNQvx7tO93k8skNhfLRM4",
-            authDomain: "whatsapp-clone-c058d.firebaseapp.com",
-            projectId: "whatsapp-clone-c058d",
-            storageBucket: "whatsapp-clone-c058d.firebasestorage.app",
-            messagingSenderId: "526524279554",
-            appId: "1:526524279554:web:4501dac49a03186590701b"
+            apiKey: "AIzaSyA0dKGwhUXPH2eqh9-cE6VKm9LmP_iI2j8",
+            authDomain: "whatsapp-clone-7a8fb.firebaseapp.com",
+            projectId: "whatsapp-clone-7a8fb",
+            storageBucket: "whatsapp-clone-7a8fb.firebasestorage.app",
+            messagingSenderId: "1006286873276",
+            appId: "1:1006286873276:web:943eb78db91df633e4a6b9",
         };
 
         this.init();
