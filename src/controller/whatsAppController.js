@@ -6,6 +6,7 @@ import { Firebase } from '../util/Firebase'
 import { User } from "../model/User";
 import { Chat } from "../model/chat";
 import { Message } from "../model/Message";
+import { Base64 } from "../util/base64";
 
 export class WhatsAppController {
 
@@ -492,7 +493,56 @@ export class WhatsAppController {
       });
 
       this.el.btnSendPicture.on('click', e=>{
-          console.log(this.el.pictureCamera.src)
+
+        this.el.btnSendPicture.disabled = true
+
+          let regex = /^data:(.+);base64,(.+)$/;
+
+          let result = this.el.pictureCamera.src.match(regex)
+          let mineType = result[1]
+          let ext = mineType.split('/')[1]
+          let filename = `camera${Date.now()}.${ext}`
+
+          let picture = new Image()
+          picture.src = this.el.pictureCamera.src;
+          picture.onload = e=> {
+
+            let canvas = document.createElement('canvas')
+            let context = canvas.getContext('2d')
+
+            canvas.widht = picture.widht
+            canvas.height = picture.height
+
+            context.translate(picture.width, 0)
+            context.scale(-1, 1);
+
+            context.drawImage(picture, 0, 0, canvas.widht, canvas.height)
+
+
+            fetch(canvas.toDataURL(mineType)) 
+            .then(res => {return res.arrayBuffer();})
+            .then(buffer => {return new File([buffer], filename, { type: mineType}); })
+            .then(file => {
+  
+              Message.sendImage(this._contactActive.chatId, this._user.email, file)
+  
+              this.el.btnSendPicture.disabled = false
+
+              this.closeAllMainPanel()
+              this._camera.stop()
+              this.el.btnReshootPanelCamera.hide()
+              this.el.pictureCamera.hide()
+              this.el.videoCamera.show()
+              this.el.containerSendPicture.hide()
+              this.el.containerTakePicutre.show()
+              this.el.panelMessagesContainer.show()
+            
+  
+            })
+
+          }
+
+          
       })
       
       this.el.btnReshootPanelCamera.on('click', e => {  
@@ -586,7 +636,7 @@ export class WhatsAppController {
     
             Base64.toFile(base64).then(filePreview =>{
     
-            Message.sendDocument(this._activeContact.chatId, this._user.email, file, base64, this.el.infoPanelDocumentPreview.innerHTML);
+            Message.sendDocument(this._activeContact.chatId, this._user.email, file, filePreview, this.el.infoPanelDocumentPreview.innerHTML);
             
           });
     
