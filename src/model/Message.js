@@ -19,10 +19,25 @@ export class Message extends Model {
     get timeStamp() {return this._data.timeStamp;}
     set timeStamp(value) { return this._data.timeStamp = value; }
 
-    get status() {return this._data.status;}
-    set status(value) { return this._data.status = value; }
-    get status() {return this._data.status;}
-    set status(value) { return this._data.status = value; }
+    get preview() {return this._data.preview;}
+    set preview(value) { return this._data.preview = value; }
+    
+    get info() {return this._data.info;}
+    set info(value) { return this._data.info = value; }
+
+    get fileType() {return this._data.fileType;}
+    set fileType(value) { return this._data.fileType = value; }
+
+    get from() {return this._data.from;}
+    set from(value) { return this._data.from = value; }
+
+    get size() {return this._data.size;}
+    set size(value) { return this._data.size = value; }
+
+    get filename() {return this._data.filename;}
+    set filename(value) { return this._data.filename = value; }
+
+
 
     getViewElement(me = true){
 
@@ -186,9 +201,14 @@ export class Message extends Model {
                             </div>
                         </div>
                     </div>
-                
 
             `;
+
+            div.on('click', e=> {
+
+                window.open(this.content)
+
+            })
 
             break;
 
@@ -323,7 +343,7 @@ export class Message extends Model {
     }
 
     static upload(file, from) {
-       // return Upload.send(file, from);
+       
         return new Promise ((s, f) => {
 
         let uploadTask = Firebase.hd().ref(from).child(Date.now() + '_' + file.name).put(file)
@@ -347,14 +367,16 @@ export class Message extends Model {
     
     }
 
-    static sendDocument(chatId, from, file, filePreview) {
+    static sendDocument(chatId, from, file, filePreview, info) {
 
-        Message.send(chatId, from, 'document').then(msgRef =>{
+        Message.send(chatId, from, 'document', '').then(msgRef =>{
 
             Message.upload(file, from).then(snapshot =>{
 
 
                 let downloadFile = snapshot.downloadURL;
+
+                if (filePreview) {
         
                 Message.upload(filePreview, from).then(snapshot2=>{
         
@@ -366,12 +388,27 @@ export class Message extends Model {
                         filename: file.name,
                         size: file.size,
                         fileType: file.type,
-                        status: 'sent'
+                        status: 'sent',
+                        info
                     }, {
                         merge: true
                     })
         
                 })
+
+            } else {
+
+                msgRef.set({
+                    content: downloadFile,                  
+                    filename: file.name,
+                    size: file.size,
+                    fileType: file.type,
+                    status: 'sent'
+                }, {
+                    merge: true
+                })                
+
+            } 
             })
 
         })
