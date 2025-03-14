@@ -165,9 +165,9 @@ export class WhatsAppController {
 
     setActiveChat(contact){
 
-        if (this._contactActive) [
+        if (this._contactActive) {
             Message.getRef(this._contactActive.chatId).onSnapshot(()=>{})
-        ]
+        }
 
 
         this._contactActive = contact;
@@ -230,7 +230,15 @@ export class WhatsAppController {
 
                     this.el.panelMessagesContainer.appendChild(view)
 
-                } else if(me) {
+                } else {
+
+                    let view = message.getViewElement(me);
+
+                    this.el.panelMessagesContainer.querySelector('#_'+ data.id).innerHTML = view.innerHTML
+
+                }
+                    
+                if(this.el.panelMessagesContainer.querySelector('#_'+ data.id) && me) {
 
                   let msgEl = this.el.panelMessagesContainer.querySelector('#_'+ data.id)
 
@@ -628,7 +636,7 @@ export class WhatsAppController {
         });
     
         this.el.btnSendDocument.on('click', (e) => {
-         
+     
             let file = this.el.inputDocument.files[0];
             let base64 = this.el.imgPanelDocumentPreview.src;
     
@@ -636,13 +644,13 @@ export class WhatsAppController {
     
             Base64.toFile(base64).then(filePreview =>{
     
-            Message.sendDocument(this._activeContact.chatId, this._user.email, file, filePreview, this.el.infoPanelDocumentPreview.innerHTML);
+            Message.sendDocument(this._contactActive.chatId, this._user.email, file, filePreview, this.el.infoPanelDocumentPreview.innerHTML);
             
           });
     
           }else{
     
-            Message.send(this._activeContact.chatId, this._user.email, file);
+            Message.sendDocument(this._contactActive.chatId, this._user.email, file);
     
           }
     
@@ -650,6 +658,7 @@ export class WhatsAppController {
     
     
         });
+    
 
 
         this.el.btnClosePanelDocumentPreview.on('click', (e) => {
